@@ -434,13 +434,13 @@ bool CustomPropertyEditor::edit(Object *p_owner, const String &p_name, Variant::
 			} else if (hint == PROPERTY_HINT_EXP_EASING) {
 
 				easing_draw->set_anchor_and_margin(MARGIN_LEFT, ANCHOR_BEGIN, 5 * EDSCALE);
-				easing_draw->set_anchor_and_margin(MARGIN_RIGHT, ANCHOR_END, 5 * EDSCALE);
+				easing_draw->set_anchor_and_margin(MARGIN_RIGHT, ANCHOR_END, -5 * EDSCALE);
 				easing_draw->set_anchor_and_margin(MARGIN_TOP, ANCHOR_BEGIN, 5 * EDSCALE);
-				easing_draw->set_anchor_and_margin(MARGIN_BOTTOM, ANCHOR_END, 30 * EDSCALE);
+				easing_draw->set_anchor_and_margin(MARGIN_BOTTOM, ANCHOR_END, -30 * EDSCALE);
 				type_button->set_anchor_and_margin(MARGIN_LEFT, ANCHOR_BEGIN, 3 * EDSCALE);
-				type_button->set_anchor_and_margin(MARGIN_RIGHT, ANCHOR_END, 3 * EDSCALE);
-				type_button->set_anchor_and_margin(MARGIN_TOP, ANCHOR_END, 25 * EDSCALE);
-				type_button->set_anchor_and_margin(MARGIN_BOTTOM, ANCHOR_END, 7 * EDSCALE);
+				type_button->set_anchor_and_margin(MARGIN_RIGHT, ANCHOR_END, -3 * EDSCALE);
+				type_button->set_anchor_and_margin(MARGIN_TOP, ANCHOR_END, -25 * EDSCALE);
+				type_button->set_anchor_and_margin(MARGIN_BOTTOM, ANCHOR_END, -7 * EDSCALE);
 				type_button->set_text(TTR("Preset.."));
 				type_button->get_popup()->clear();
 				type_button->get_popup()->add_item(TTR("Linear"), EASING_LINEAR);
@@ -523,8 +523,8 @@ bool CustomPropertyEditor::edit(Object *p_owner, const String &p_name, Variant::
 				action_buttons[0]->set_anchor(MARGIN_TOP, ANCHOR_END);
 				action_buttons[0]->set_anchor(MARGIN_RIGHT, ANCHOR_END);
 				action_buttons[0]->set_anchor(MARGIN_BOTTOM, ANCHOR_END);
-				action_buttons[0]->set_begin(Point2(70 * EDSCALE, button_margin - 5 * EDSCALE));
-				action_buttons[0]->set_end(Point2(margin, margin));
+				action_buttons[0]->set_begin(Point2(-70 * EDSCALE, -button_margin + 5 * EDSCALE));
+				action_buttons[0]->set_end(Point2(-margin, -margin));
 				action_buttons[0]->set_text(TTR("Close"));
 				action_buttons[0]->show();
 
@@ -2474,11 +2474,14 @@ bool PropertyEditor::_is_drop_valid(const Dictionary &p_drag_data, const Diction
 
 			String allowed_type = d["hint_text"];
 
+			print_line("allowed type " + allowed_type);
+
 			Dictionary drag_data = p_drag_data;
 			if (drag_data.has("type") && String(drag_data["type"]) == "resource") {
 				Ref<Resource> res = drag_data["resource"];
 				for (int i = 0; i < allowed_type.get_slice_count(","); i++) {
 					String at = allowed_type.get_slice(",", i).strip_edges();
+					print_line("RES vs " + at);
 					if (res.is_valid() && ClassDB::is_parent_class(res->get_class(), at)) {
 						return true;
 					}
@@ -2489,13 +2492,18 @@ bool PropertyEditor::_is_drop_valid(const Dictionary &p_drag_data, const Diction
 
 				Vector<String> files = drag_data["files"];
 
+				print_line("fileS: " + String(Variant(files)));
 				if (files.size() == 1) {
 					String file = files[0];
 					String ftype = EditorFileSystem::get_singleton()->get_file_type(file);
+
+					print_line("file: " + file);
+					print_line("type: " + ftype);
 					if (ftype != "") {
 
 						for (int i = 0; i < allowed_type.get_slice_count(","); i++) {
 							String at = allowed_type.get_slice(",", i).strip_edges();
+							print_line("FILE vs " + at);
 							if (ClassDB::is_parent_class(ftype, at)) {
 								return true;
 							}
